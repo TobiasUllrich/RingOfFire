@@ -9,7 +9,8 @@ import { Game } from 'src/models/game';
 
 export class GameComponent implements OnInit {
   pickCardAnimation=false;
-  game: Game | undefined;
+  game: Game | any; //Variable game speichert das Objekt vom Typ Game
+  currentCard: string = '';
 
   constructor() { }
 
@@ -18,12 +19,18 @@ export class GameComponent implements OnInit {
   }
 
   newGame(){
-    this.game = new Game(); //Leeres JSON-Objekt wird erstellt und in der Variable gespeichert
+    this.game = new Game(); //Objekt wird erstellt und in der Variable game gespeichert
     console.log(this.game);
   }
 
   takeCard(){
+    if(!this.pickCardAnimation){ //Nur wenn keine Karten-Animation abläuft kann man die nächste Karte ziehen
+    this.currentCard = this.game.stack.pop();
+    console.log(this.currentCard);
     this.pickCardAnimation=true;
+    
+    setTimeout(()=>{this.pickCardAnimation=false;},1500);
+    }
   }
-
+  
 }
