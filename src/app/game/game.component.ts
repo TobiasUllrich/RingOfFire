@@ -32,6 +32,9 @@ export class GameComponent implements OnInit {
     console.log('New Card ' + this.currentCard);
     console.log('Game is ' + this.game);
 
+    this.game.currentPlayer++; //Nächster Spieler ist dran
+    this.game.currentPlayer=this.game.currentPlayer % this.game.players.length; //Wenn wir am Ende sind gehts wieder von vorne los
+
     setTimeout(()=>{
       this.game.playedCards.push(this.currentCard);
       this.pickCardAnimation=false;
