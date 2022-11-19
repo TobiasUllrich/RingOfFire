@@ -1,4 +1,7 @@
 export class Game {
+   subscribe(arg0: (newTodos: any) => void) {
+     throw new Error('Method not implemented.');
+   }
    public players: string[] = [];
    public stack: string[] = [];
    public playedCards: string[] = [];
@@ -16,6 +19,17 @@ export class Game {
     shuffle(this.stack); 
 
    }
+
+public toJson(){
+  return{
+    players: this.players,
+    stack: this.stack,
+    playedCards: this.playedCards,
+    currentPlayer: this.currentPlayer
+  };
+}
+
+
 }
 
 function shuffle(array: any) {
