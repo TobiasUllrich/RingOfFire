@@ -1,0 +1,14 @@
+{
+  "targets": {
+    "ringoffire-54fba": {
+      "hosting": {
+        "ringoffire": [
+          "ringoffire-54fba"
+        ]
+      }
+    }
+  },
+  "projects": {
+    "default": "ringoffire-54fba"
+  }
+}
