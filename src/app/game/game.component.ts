@@ -14,8 +14,9 @@ import { ActivatedRoute } from '@angular/router';
 
 export class GameComponent implements OnInit {
   pickCardAnimation=false;
-  game: Game; //Variable game speichert das Objekt vom Typ Game
   currentCard: string = '';
+  game: Game; //Variable game speichert das Objekt vom Typ Game
+  gameId: string;
   
   //************  FIREBASE  **************/
   observedgame: Observable<any>; //Variable die beobachtet werden kann und sich immer updated, sobald sich ihr wert in der Datenbank geändert hat
@@ -36,28 +37,30 @@ export class GameComponent implements OnInit {
     this.route.params.subscribe((params)=>{
       
          console.log('Aktuelle ID ' + params['id']); //Parameter der route ausgeben
-  
+         this.gameId = params['id']; //Globale Speicherung der ID um sie überall verwenden zu können
+
           // (coll weil sonst verwechselt firebase Variable und Funktion)
           const coll = collection(this.firestore, 'games'); // Wir greifen auf die collection/Sammlung mit dem Namen 'games' zu und speichern diese in der Variable 'coll'
           //this.observedgame = collectionData(coll, params['id']); //Daten aus unserer collection/Sammlung werden mit collectionData() abgerufen und in unserer Variable observedgame gespeichert werden
           this.observedgame = collectionData(coll, { idField: 'id'});
+          
 
           //Mit subscribe() abonnieren wir Änderungen in der Datenbank und sobald eine Änderung stattfindet werden uns die alten & neuen Games in Echtzeit angezeigt
           this.observedgame.subscribe( (x) => {
 
             console.log('Neue Games sind', x);
-            let result = x.filter(games => games['id'] == params['id']);
+            let result = x.filter(games => games['id'] == this.gameId);
             result = result['0']['game'];
             
-            console.log('Gesuchtes Spiel', result);
-            console.log(result['currentPlayer']);
-
+            console.log('Gesuchtes Spiel ', result);
+            console.log('Game Variable ', this.game);
+            
+            //Einzelne Werte hier hinein zu speichern 
+            this.game = result;  //Erst jetzt haben wir das gesuchte Spiel zum aktuellen Spiel gemacht indem wir es im Game-Objekt gespeichert haben
+            
+            
             //!!!!! Auch möglich: Nachrichten oder Geräusche ausgeben !!!!! 
-             this.game.currentPlayer = result['currentPlayer']; //Geänderte Daten in Array speichern
-             this.game.playedCards = result['playedCards']; //Geänderte Daten in Array speichern
-             this.game.players = result['players']; //Geänderte Daten in Array speichern
-             this.game.stack = result['stack']; //Geänderte Daten in Array speichern
-             //console.log('Neue Games sind', this.game); //Geänderte Daten ausgeben
+             console.log('Aktuelles Spiel ', this.game); //Geänderte Daten ausgeben
           });    
     }); 
   }
@@ -69,13 +72,14 @@ export class GameComponent implements OnInit {
     this.pickCardAnimation=true;   
     console.log('New Card ' + this.currentCard);
     console.log('Game is ' + this.game);
-
+    this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
     this.game.currentPlayer++; //Nächster Spieler ist dran
     this.game.currentPlayer=this.game.currentPlayer % this.game.players.length; //Wenn wir am Ende sind gehts wieder von vorne los
 
     setTimeout(()=>{
       this.game.playedCards.push(this.currentCard);
       this.pickCardAnimation=false;
+      this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
     },1000);
     }
   }
@@ -85,6 +89,7 @@ export class GameComponent implements OnInit {
     dialogRef.afterClosed().subscribe((name: string) => {
       if(name && name.length > 0){ //Spieler wird beim schließen des Dialogs nur hinzugefügt, wenn ein Name existiert (1.Bed) und er eingegeben wurde (2. Bed)
       this.game.players.push(name);
+      this.saveGame(); //Nachdem ein Spieler hinzugefügt wurde wird das Spiel gespeichert
       }
       console.log('The dialog was closed',name);
     });
@@ -112,7 +117,7 @@ async readDocument(id: string) {
 }
 
 //Bestehendes Dokument der Sammlung/Collection wird mit den Daten des JSON-Objekts überschrieben; Dafür wird der Schlüssel übergeben
-updateDocument(id: string, fieldValue: string){
+updateDocument(id: string, fieldValue: object){
   const coll = collection(this.firestore, 'games');
   setDoc(doc(coll,id), {game: fieldValue}); 
 }
@@ -124,7 +129,9 @@ updateDocument(id: string, fieldValue: string){
   }
 //************  FIREBASE  **************/
 
-
+saveGame(){
+  this.updateDocument(this.gameId, this.game.toJson()); 
+}
 
 
 }
