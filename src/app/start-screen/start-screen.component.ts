@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
-import { collection, doc, Firestore, setDoc } from 'firebase/firestore';
+import { addDoc, collection, doc, Firestore, setDoc } from '@angular/fire/firestore';
 import { Game } from 'src/models/game';
 
 @Component({
@@ -17,20 +17,19 @@ export class StartScreenComponent implements OnInit {
 
   newGame(){
     //Start Game
-    let game = new Game();
-    this.createDocument(game.toJson()).then((gameInfo)=>{console.log(gameInfo);
+    let game = new Game(); //Objekt wird erstellt und in der Variable game gespeichert
+    this.createDocument(game.toJson()).then((gameInfo)=>{
+         //console.log(gameInfo.id);
          this.router.navigateByUrl('/game/' + gameInfo.id);
        }
      ); //Immer wenn das Spiel neu gestartet wird dann wird das neue Spiel als Json in der Collection gespeichert  
   }
 
 //Neues Dokument wird zur Sammlung/Collection games hinzugefügt und die Daten sind im JSON-Objekt; Schlüssel wird automatisch generiert
-  async createDocument(fieldValue: any){
-    console.log('AddDocument ausgeführt');
+  async createDocument(fieldValue: any) {
+    //console.log('AddDocument ausgeführt');
     const coll = collection(this.firestore, 'games');
-    await setDoc(doc(coll), {game: fieldValue});
-
-  //await addDoc(coll,  {game: fieldValue});  ALTERNATIV
+    return await addDoc(coll, {game: fieldValue});
 }
 
 

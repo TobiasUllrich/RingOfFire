@@ -30,10 +30,7 @@ export class GameComponent implements OnInit {
   //************  FIREBASE  **************/
 
 
-
-
-   ngOnInit(): void {
-    this.newGame(); //Neues Spiel wird erstellt
+  ngOnInit(): void {
 
     //Neues Spiel soll beobachtet werden, wofür zuersteinmal die id ermitteln
     this.route.params.subscribe((params)=>{
@@ -42,51 +39,29 @@ export class GameComponent implements OnInit {
   
           // (coll weil sonst verwechselt firebase Variable und Funktion)
           const coll = collection(this.firestore, 'games'); // Wir greifen auf die collection/Sammlung mit dem Namen 'games' zu und speichern diese in der Variable 'coll'
-          this.observedgame = collectionData(coll, params['id']); //Daten aus unserer collection/Sammlung werden mit collectionData() abgerufen und in unserer Variable observedgame gespeichert werden
-          
-          // const docRef = doc(coll,params['id']);
-          // const docSnap = getDoc(docRef);
-          // console.log((await docSnap).data());
-          //console.log(getDoc(doc(coll,params['id'])));
-          //data()['subscribe']()
-          //this.readDocument(params['id']);
-          //let zzz= this.readDocument(params['id']);
-          //console.log(this.observedgame);
-          //this.observedgame = this.firestore.collection('games').doc(params['id']).valueChanges().subscribe();
+          //this.observedgame = collectionData(coll, params['id']); //Daten aus unserer collection/Sammlung werden mit collectionData() abgerufen und in unserer Variable observedgame gespeichert werden
+          this.observedgame = collectionData(coll, { idField: 'id'});
 
-          // let isPromisePending = false;
-
-          // do
-          // {let check = this.readDocument(params['id']);
-          //  console.log(check);
-          // }
-          // while (!this.readDocument(params['id'].isFulfilled))
-          
- 
           //Mit subscribe() abonnieren wir Änderungen in der Datenbank und sobald eine Änderung stattfindet werden uns die alten & neuen Games in Echtzeit angezeigt
           this.observedgame.subscribe( (x) => {
 
             console.log('Neue Games sind', x);
-            console.log('Erstes Game ist ', x['0']);
-            this.game = x;
-            //x.forEach(y => console.log(y.docRef(params['id'])));
-
+            let result = x.filter(games => games['id'] == params['id']);
+            result = result['0']['game'];
+            
+            console.log('Gesuchtes Spiel', result);
+            console.log(result['currentPlayer']);
 
             //!!!!! Auch möglich: Nachrichten oder Geräusche ausgeben !!!!! 
-            // this.game.currentPlayer = games.currentPlayer; //Geänderte Daten in Array speichern
-            // this.game.playedCards = games.playedCards; //Geänderte Daten in Array speichern
-            // this.game.players = games.players; //Geänderte Daten in Array speichern
-            // this.game.stack = games.stack; //Geänderte Daten in Array speichern
-            // console.log('Neue Games sind', this.games); //Geänderte Daten ausgeben
-
+             this.game.currentPlayer = result['currentPlayer']; //Geänderte Daten in Array speichern
+             this.game.playedCards = result['playedCards']; //Geänderte Daten in Array speichern
+             this.game.players = result['players']; //Geänderte Daten in Array speichern
+             this.game.stack = result['stack']; //Geänderte Daten in Array speichern
+             //console.log('Neue Games sind', this.game); //Geänderte Daten ausgeben
           });    
     }); 
-
   }
 
-  newGame(){
-    //this.game = new Game(); //Objekt wird erstellt und in der Variable game gespeichert
-  }
 
   takeCard(){
     if(!this.pickCardAnimation){ //Nur wenn keine Karten-Animation abläuft kann man die nächste Karte ziehen
@@ -120,12 +95,10 @@ export class GameComponent implements OnInit {
 
 //************  FIREBASE  **************/
 //Neues Dokument wird zur Sammlung/Collection games hinzugefügt und die Daten sind im JSON-Objekt; Schlüssel wird automatisch generiert
-async createDocument(fieldValue: any){
-  console.log('AddDocument ausgeführt');
+async createDocument(fieldValue: any) : Promise <any> {
+  //console.log('AddDocument ausgeführt');
   const coll = collection(this.firestore, 'games');
-  await setDoc(doc(coll), {game: fieldValue});
-
-  //await addDoc(coll,  {game: fieldValue});  ALTERNATIV
+  return await addDoc(coll, {game: fieldValue});
 }
 
 
@@ -135,7 +108,7 @@ async readDocument(id: string) {
   const docRef = doc(coll,id);
   const docSnap = await getDoc(docRef);
   console.log(docSnap.data());
-  return docSnap.data();
+  return (await (getDoc(docRef))).data();
 }
 
 //Bestehendes Dokument der Sammlung/Collection wird mit den Daten des JSON-Objekts überschrieben; Dafür wird der Schlüssel übergeben
