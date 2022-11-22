@@ -13,11 +13,14 @@ import { ActivatedRoute } from '@angular/router';
 })
 
 export class GameComponent implements OnInit {
-  pickCardAnimation=false;
-  currentCard: string = '';
+
+  
+
   game: Game; //Variable game speichert das Objekt vom Typ Game
   gameId: string;
   
+  
+
   //************  FIREBASE  **************/
   observedgame: Observable<any>; //Variable die beobachtet werden kann und sich immer updated, sobald sich ihr wert in der Datenbank geändert hat
   games: Array<any>; //Hier sollen die Daten gespeichert werden immmer wenn sich etwas geändert hat
@@ -26,7 +29,6 @@ export class GameComponent implements OnInit {
 
   //************  FIREBASE  **************/   // Service 'ActivatedRoute' wird importiert und in Variable 'route' gespeichert
     constructor(private route: ActivatedRoute, private firestore: Firestore, public dialog: MatDialog) { // Library 'Firestore' wird importiert und als Objekt in Variable 'firestore' gespeichert
-
     }
   //************  FIREBASE  **************/
 
@@ -41,44 +43,33 @@ export class GameComponent implements OnInit {
 
           // (coll weil sonst verwechselt firebase Variable und Funktion)
           const coll = collection(this.firestore, 'games'); // Wir greifen auf die collection/Sammlung mit dem Namen 'games' zu und speichern diese in der Variable 'coll'
-          //this.observedgame = collectionData(coll, params['id']); //Daten aus unserer collection/Sammlung werden mit collectionData() abgerufen und in unserer Variable observedgame gespeichert werden
           this.observedgame = collectionData(coll, { idField: 'id'});
           
-
           //Mit subscribe() abonnieren wir Änderungen in der Datenbank und sobald eine Änderung stattfindet werden uns die alten & neuen Games in Echtzeit angezeigt
           this.observedgame.subscribe( (x) => {
-
-            console.log('Neue Games sind', x);
-            let result = x.filter(games => games['id'] == this.gameId);
-            result = result['0']['game'];
-            
-            console.log('Gesuchtes Spiel ', result);
-            console.log('Game Variable ', this.game);
-            
-            //Einzelne Werte hier hinein zu speichern 
+            let result = x.filter(games => games['id'] == this.gameId); //Aus allen Spielen das gewünschte herausfiltern
+            result = result['0']['game']; //Speichert das aktuelle Spiel als JSON in der Variable
             this.game = result;  //Erst jetzt haben wir das gesuchte Spiel zum aktuellen Spiel gemacht indem wir es im Game-Objekt gespeichert haben
-            
-            
             //!!!!! Auch möglich: Nachrichten oder Geräusche ausgeben !!!!! 
-             console.log('Aktuelles Spiel ', this.game); //Geänderte Daten ausgeben
           });    
     }); 
   }
 
 
   takeCard(){
-    if(!this.pickCardAnimation){ //Nur wenn keine Karten-Animation abläuft kann man die nächste Karte ziehen
-    this.currentCard = this.game.stack.pop();
-    this.pickCardAnimation=true;   
-    console.log('New Card ' + this.currentCard);
-    console.log('Game is ' + this.game);
-    this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
+    if(!this.game.pickCardAnimation){ //Nur wenn keine Karten-Animation abläuft kann man die nächste Karte ziehen
+    this.game.currentCard = this.game.stack.pop();
+    this.game.pickCardAnimation=true;   
+    //console.log('New Card ' + this.game.currentCard);
+    //console.log('Game is ' + this.game);
+
     this.game.currentPlayer++; //Nächster Spieler ist dran
     this.game.currentPlayer=this.game.currentPlayer % this.game.players.length; //Wenn wir am Ende sind gehts wieder von vorne los
+    this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
 
     setTimeout(()=>{
-      this.game.playedCards.push(this.currentCard);
-      this.pickCardAnimation=false;
+      this.game.playedCards.push(this.game.currentCard);
+      this.game.pickCardAnimation=false;
       this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
     },1000);
     }
@@ -91,7 +82,7 @@ export class GameComponent implements OnInit {
       this.game.players.push(name);
       this.saveGame(); //Nachdem ein Spieler hinzugefügt wurde wird das Spiel gespeichert
       }
-      console.log('The dialog was closed',name);
+      //console.log('The dialog was closed',name);
     });
   }
 
@@ -112,7 +103,7 @@ async readDocument(id: string) {
   const coll = collection(this.firestore, 'games');
   const docRef = doc(coll,id);
   const docSnap = await getDoc(docRef);
-  console.log(docSnap.data());
+  //console.log(docSnap.data());
   return (await (getDoc(docRef))).data();
 }
 
@@ -130,7 +121,7 @@ updateDocument(id: string, fieldValue: object){
 //************  FIREBASE  **************/
 
 saveGame(){
-  this.updateDocument(this.gameId, this.game.toJson()); 
+  this.updateDocument(this.gameId, this.game); // this.game.toJson()  nicht benötigt
 }
 
 

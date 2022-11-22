@@ -20,6 +20,7 @@ export class StartScreenComponent implements OnInit {
     let game = new Game(); //Objekt wird erstellt und in der Variable game gespeichert
     this.createDocument(game.toJson()).then((gameInfo)=>{
          //console.log(gameInfo.id);
+           //console.log(game);
          this.router.navigateByUrl('/game/' + gameInfo.id);
        }
      ); //Immer wenn das Spiel neu gestartet wird dann wird das neue Spiel als Json in der Collection gespeichert  
