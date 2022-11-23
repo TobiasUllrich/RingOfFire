@@ -75,6 +75,10 @@ export class GameComponent implements OnInit {
     }
   }
   
+  editPlayer(playerId: number){
+   console.log('Edit player',playerId);
+  }
+
   openDialog(): void {
     const dialogRef = this.dialog.open(DialogAddPlayerComponent);
     dialogRef.afterClosed().subscribe((name: string) => {

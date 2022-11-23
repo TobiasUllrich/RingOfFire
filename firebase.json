@@ -1,7 +1,7 @@
 {
   "hosting": {
     "target": "ringoffire",
-    "public": "dist/build",
+    "public": "dist/ringoffire",
     "ignore": [
       "**/.*"
     ],
