@@ -9,6 +9,7 @@ import { Game } from 'src/models/game';
 export class PlayerComponent implements OnInit {
 
   @Input() name;
+  @Input() image = 'male.webp';
   @Input() playerActive: boolean = false;
   constructor() { }
 

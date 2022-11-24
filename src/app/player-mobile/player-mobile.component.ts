@@ -7,9 +7,10 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class PlayerMobileComponent implements OnInit {
 
-
   @Input() name;
+  @Input() image = 'male.webp';
   @Input() playerActive: boolean = false;
+  
   constructor() { }
 
   ngOnInit(): void {

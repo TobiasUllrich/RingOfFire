@@ -5,6 +5,7 @@ import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player
 import { Observable } from 'rxjs';
 import { Firestore, collectionData, collection, setDoc, doc, deleteDoc, addDoc, getDoc, onSnapshot } from '@angular/fire/firestore';
 import { ActivatedRoute } from '@angular/router';
+import { EditPlayerComponent } from '../edit-player/edit-player.component';
 
 @Component({
   selector: 'app-game',
@@ -18,8 +19,7 @@ export class GameComponent implements OnInit {
 
   game: Game; //Variable game speichert das Objekt vom Typ Game
   gameId: string;
-  
-  
+  gameOver: boolean = false;
 
   //************  FIREBASE  **************/
   observedgame: Observable<any>; //Variable die beobachtet werden kann und sich immer updated, sobald sich ihr wert in der Datenbank geändert hat
@@ -57,6 +57,10 @@ export class GameComponent implements OnInit {
 
 
   takeCard(){
+    if(this.game.stack.length==0){
+       this.gameOver=true;
+    }
+    else{
     if(!this.game.pickCardAnimation){ //Nur wenn keine Karten-Animation abläuft kann man die nächste Karte ziehen
     this.game.currentCard = this.game.stack.pop();
     this.game.pickCardAnimation=true;   
@@ -73,10 +77,27 @@ export class GameComponent implements OnInit {
       this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
     },1000);
     }
+
+    }
   }
+
   
   editPlayer(playerId: number){
    console.log('Edit player',playerId);
+   const dialogRef = this.dialog.open(EditPlayerComponent);
+   dialogRef.afterClosed().subscribe((change: string) => {
+    if(change){
+      if(change == 'DELETE'){
+        this.game.player_images.splice(playerId,1);
+        this.game.players.splice(playerId,1);
+      }
+      else{
+        this.game.player_images[playerId]=change;
+      }
+      console.log('Received change',change);
+      this.saveGame(); //Nachdem ein Bild geändert wurde wird das Spiel gespeichert
+    }
+  });
   }
 
   openDialog(): void {
@@ -84,6 +105,7 @@ export class GameComponent implements OnInit {
     dialogRef.afterClosed().subscribe((name: string) => {
       if(name && name.length > 0){ //Spieler wird beim schließen des Dialogs nur hinzugefügt, wenn ein Name existiert (1.Bed) und er eingegeben wurde (2. Bed)
       this.game.players.push(name);
+      this.game.player_images.push('male.webp');
       this.saveGame(); //Nachdem ein Spieler hinzugefügt wurde wird das Spiel gespeichert
       }
       //console.log('The dialog was closed',name);
