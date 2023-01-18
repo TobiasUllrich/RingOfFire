@@ -9,7 +9,7 @@ import { DialogAddPlayerComponent } from '../dialog-add-player/dialog-add-player
 })
 export class EditPlayerComponent implements OnInit {
 
-  allProfilePictures=['male.webp','female.png','spongebob.jpg','monster.jpg','female2.webp'];
+  allProfilePictures = ['male.png', 'female.png', 'spongebob.jpg', 'monster.jpg', 'girl.webp', 'pokerface.png'];
 
   constructor(public dialogRef: MatDialogRef<DialogAddPlayerComponent>) { }
 
@@ -17,11 +17,9 @@ export class EditPlayerComponent implements OnInit {
   }
 
 
-  onNoClick(){
-   this.dialogRef.close();
-   console.log('Aborted');
+  onNoClick() {
+    this.dialogRef.close();
+    //console.log('Aborted');
   }
-
-
 
 }

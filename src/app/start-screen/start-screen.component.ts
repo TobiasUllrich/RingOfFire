@@ -15,23 +15,20 @@ export class StartScreenComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  newGame(){
-    //Start Game
+  //Immer wenn das Spiel neu gestartet wird dann wird das neue Spiel als Json in der Collection gespeichert  
+  newGame() {
     let game = new Game(); //Objekt wird erstellt und in der Variable game gespeichert
-    this.createDocument(game.toJson()).then((gameInfo)=>{
-         //console.log(gameInfo.id);
-           //console.log(game);
-         this.router.navigateByUrl('/game/' + gameInfo.id);
-       }
-     ); //Immer wenn das Spiel neu gestartet wird dann wird das neue Spiel als Json in der Collection gespeichert  
+    this.createDocument(game.toJson()).then((gameInfo) => {
+      this.router.navigateByUrl('/game/' + gameInfo.id); //Navigation zur Url mit game id
+    }
+    ); 
   }
 
-//Neues Dokument wird zur Sammlung/Collection games hinzugefügt und die Daten sind im JSON-Objekt; Schlüssel wird automatisch generiert
+  //Neues Dokument wird zur Sammlung/Collection games hinzugefügt und die Daten sind im JSON-Objekt; Schlüssel wird automatisch generiert
   async createDocument(fieldValue: any) {
-    //console.log('AddDocument ausgeführt');
     const coll = collection(this.firestore, 'games');
-    return await addDoc(coll, {game: fieldValue});
-}
+    return await addDoc(coll, { game: fieldValue });
+  }
 
 
 }

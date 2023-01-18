@@ -15,30 +15,25 @@ import { EditPlayerComponent } from '../edit-player/edit-player.component';
 
 export class GameComponent implements OnInit {
 
-  
-
   game: Game; //Variable game speichert das Objekt vom Typ Game
   gameId: string;
   gameOver: boolean = false;
 
-  //************  FIREBASE  **************/
   observedgame: Observable<any>; //Variable die beobachtet werden kann und sich immer updated, sobald sich ihr wert in der Datenbank geändert hat
   games: Array<any>; //Hier sollen die Daten gespeichert werden immmer wenn sich etwas geändert hat
-  gametext= 'idiota22222';
-  //************  FIREBASE  **************/
+  gametext= '';
 
-  //************  FIREBASE  **************/   // Service 'ActivatedRoute' wird importiert und in Variable 'route' gespeichert
-    constructor(private route: ActivatedRoute, private firestore: Firestore, public dialog: MatDialog) { // Library 'Firestore' wird importiert und als Objekt in Variable 'firestore' gespeichert
-    }
-  //************  FIREBASE  **************/
+  // Service 'ActivatedRoute' wird importiert und in Variable 'route' gespeichert
+  // Library 'Firestore' wird importiert und als Objekt in Variable 'firestore' gespeichert
+    constructor(private route: ActivatedRoute, private firestore: Firestore, public dialog: MatDialog) {}
 
 
   ngOnInit(): void {
-
+ 
     //Neues Spiel soll beobachtet werden, wofür zuersteinmal die id ermitteln
     this.route.params.subscribe((params)=>{
       
-         console.log('Aktuelle ID ' + params['id']); //Parameter der route ausgeben
+         //console.log('Aktuelle ID ' + params['id']); //Parameter der route ausgeben
          this.gameId = params['id']; //Globale Speicherung der ID um sie überall verwenden zu können
 
           // (coll weil sonst verwechselt firebase Variable und Funktion)
@@ -57,6 +52,8 @@ export class GameComponent implements OnInit {
 
 
   takeCard(){
+    //Es müssen mindestens zwei Spieler existieren
+    if(typeof this.game.players[0]!=='undefined' && this.game.players.length>1){
     if(this.game.stack.length==0){
        this.gameOver=true;
     }
@@ -64,8 +61,6 @@ export class GameComponent implements OnInit {
     if(!this.game.pickCardAnimation){ //Nur wenn keine Karten-Animation abläuft kann man die nächste Karte ziehen
     this.game.currentCard = this.game.stack.pop();
     this.game.pickCardAnimation=true;   
-    //console.log('New Card ' + this.game.currentCard);
-    //console.log('Game is ' + this.game);
 
     this.game.currentPlayer++; //Nächster Spieler ist dran
     this.game.currentPlayer=this.game.currentPlayer % this.game.players.length; //Wenn wir am Ende sind gehts wieder von vorne los
@@ -74,10 +69,10 @@ export class GameComponent implements OnInit {
     setTimeout(()=>{
       this.game.playedCards.push(this.game.currentCard);
       this.game.pickCardAnimation=false;
-      this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
+      this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde, wird das Spiel gespeichert
     },1000);
     }
-
+    }
     }
   }
 
@@ -105,7 +100,7 @@ export class GameComponent implements OnInit {
     dialogRef.afterClosed().subscribe((name: string) => {
       if(name && name.length > 0){ //Spieler wird beim schließen des Dialogs nur hinzugefügt, wenn ein Name existiert (1.Bed) und er eingegeben wurde (2. Bed)
       this.game.players.push(name);
-      this.game.player_images.push('male.webp');
+      this.game.player_images.push('male.png');
       this.saveGame(); //Nachdem ein Spieler hinzugefügt wurde wird das Spiel gespeichert
       }
       //console.log('The dialog was closed',name);
@@ -118,7 +113,6 @@ export class GameComponent implements OnInit {
 //************  FIREBASE  **************/
 //Neues Dokument wird zur Sammlung/Collection games hinzugefügt und die Daten sind im JSON-Objekt; Schlüssel wird automatisch generiert
 async createDocument(fieldValue: any) : Promise <any> {
-  //console.log('AddDocument ausgeführt');
   const coll = collection(this.firestore, 'games');
   return await addDoc(coll, {game: fieldValue});
 }
@@ -129,7 +123,6 @@ async readDocument(id: string) {
   const coll = collection(this.firestore, 'games');
   const docRef = doc(coll,id);
   const docSnap = await getDoc(docRef);
-  //console.log(docSnap.data());
   return (await (getDoc(docRef))).data();
 }
 
@@ -146,9 +139,11 @@ updateDocument(id: string, fieldValue: object){
   }
 //************  FIREBASE  **************/
 
-saveGame(){
-  this.updateDocument(this.gameId, this.game); // this.game.toJson()  nicht benötigt
-}
 
+
+// Saves the game
+saveGame(){
+  this.updateDocument(this.gameId, this.game); //this.game.toJson() nicht benötigt
+}
 
 }

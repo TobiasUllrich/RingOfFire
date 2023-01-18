@@ -1,28 +1,32 @@
-.player{
+.player {
     overflow: hidden;
-    width:300px;
-    display:flex;
-    align-items:center;
-    background-color: grey;
+    width: 300px;
+    display: flex;
+    align-items: center;
+    background-color: black;
     border-top-left-radius: 50px;
     border-bottom-left-radius: 50px;
+    height: 60px;
+    cursor: pointer;
 
-    span{
-        font-size:24px;
-        margin-left:16px;
+    span {
+        color: white;
+        font-size: 24px;
+        height: 24px;
+        margin-left: 16px;
         text-overflow: ellipsis; // ... wenn der Text endet
-        white-space:nowrap; // max. 1 Zeile
-        overflow:hidden; // Alles was übersteht verstecken
+        white-space: nowrap; // max. 1 Zeile
+        overflow: hidden; // Alles was übersteht verstecken
     }
 
-    img{
+    img {
         width: 50px;
-        height:50px;
-        object-fit:cover;
-        border-radius:100%;
+        height: 50px;
+        object-fit: cover;
+        border-radius: 100%;
     }
 }
 
-.player-active{
-    background-color: green!important;
+.player-active {
+    background-color: firebrick !important;
 }

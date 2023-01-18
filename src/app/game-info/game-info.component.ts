@@ -6,7 +6,7 @@ import { Component, Input, OnInit, OnChanges } from '@angular/core';
   styleUrls: ['./game-info.component.scss']
 })
 export class GameInfoComponent implements OnInit, OnChanges {
-  
+
   cardAction = [
     { title: 'Waterfall', description: 'Everyone has to start drinking at the same time. As soon as player 1 stops drinking, player 2 may stop drinking. Player 3 may stop as soon as player 2 stops drinking, and so on.' },
     { title: 'You', description: 'You decide who drinks' },
@@ -23,9 +23,9 @@ export class GameInfoComponent implements OnInit, OnChanges {
     { title: 'Rule', description: 'Make a rule. Everyone needs to drink when he breaks the rule.' },
   ];
 
-title = '';
-description = '';
-@Input() card: string;
+  title = '';
+  description = '';
+  @Input() card: string;
 
 
   constructor() { }
@@ -34,11 +34,10 @@ description = '';
   }
 
   ngOnChanges(): void {
-    if(this.card){
-    //console.log('Current card is:'+ this.card);
-    let cardNumber = +this.card.split('_')[1]; //Splitet den String und nimmt den zweiten Teil des entstandenen Arrays (Index 1)
-    this.title = this.cardAction[cardNumber-1].title;
-    this.description = this.cardAction[cardNumber-1].description;
+    if (this.card) {
+      let cardNumber = +this.card.split('_')[1]; //Splitet den String und nimmt den zweiten Teil des entstandenen Arrays (Index 1)
+      this.title = this.cardAction[cardNumber - 1].title;
+      this.description = this.cardAction[cardNumber - 1].description;
     }
   }
 

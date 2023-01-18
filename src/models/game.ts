@@ -31,10 +31,9 @@ public toJson(){
     currentCard: this.currentCard
   };
 }
-
-
 }
 
+//Shuffles the stack
 function shuffle(array: any) {
     let currentIndex = array.length,  randomIndex;
   
@@ -51,4 +50,4 @@ function shuffle(array: any) {
     }
   
     return array;
-  }
+}

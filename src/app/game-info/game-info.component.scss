@@ -1,7 +1,8 @@
-mat-card{
+mat-card {
+  width: 100%;
+  background-color: black;
 
-    
-    @media(max-width:720px){
-      min-height:150px;
-    }
+  @media(max-width:720px) {
+    min-height: 150px;
+  }
 }
