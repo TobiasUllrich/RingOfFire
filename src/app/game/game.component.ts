@@ -15,7 +15,7 @@ import { EditPlayerComponent } from '../edit-player/edit-player.component';
 
 export class GameComponent implements OnInit {
 
-  game: Game; //Variable game speichert das Objekt vom Typ Game
+  game: Game; //Variable game saves Object of Typ Game
   gameId: string;
   gameOver: boolean = false;
 
@@ -65,7 +65,6 @@ export class GameComponent implements OnInit {
     this.game.currentPlayer++; //Nächster Spieler ist dran
     this.game.currentPlayer=this.game.currentPlayer % this.game.players.length; //Wenn wir am Ende sind gehts wieder von vorne los
     this.saveGame(); //Nachdem die oben liegende Karte gezogen wurde wird das Spiel gespeichert
-
     setTimeout(()=>{
       this.game.playedCards.push(this.game.currentCard);
       this.game.pickCardAnimation=false;
@@ -78,7 +77,7 @@ export class GameComponent implements OnInit {
 
   
   editPlayer(playerId: number){
-   console.log('Edit player',playerId);
+   //console.log('Edit player',playerId);
    const dialogRef = this.dialog.open(EditPlayerComponent);
    dialogRef.afterClosed().subscribe((change: string) => {
     if(change){
@@ -89,7 +88,7 @@ export class GameComponent implements OnInit {
       else{
         this.game.player_images[playerId]=change;
       }
-      console.log('Received change',change);
+      //console.log('Received change',change);
       this.saveGame(); //Nachdem ein Bild geändert wurde wird das Spiel gespeichert
     }
   });
@@ -108,15 +107,18 @@ export class GameComponent implements OnInit {
   }
 
 
+// Saves the game
+saveGame(){
+  this.updateDocument(this.gameId, this.game); //this.game.toJson() nicht benötigt
+}
 
 
-//************  FIREBASE  **************/
+//************  FIREBASE CRUD-FUNCTIONS  **************/
 //Neues Dokument wird zur Sammlung/Collection games hinzugefügt und die Daten sind im JSON-Objekt; Schlüssel wird automatisch generiert
 async createDocument(fieldValue: any) : Promise <any> {
   const coll = collection(this.firestore, 'games');
   return await addDoc(coll, {game: fieldValue});
 }
-
 
 //Daten eines Dokumentes auslesen
 async readDocument(id: string) {
@@ -137,13 +139,6 @@ updateDocument(id: string, fieldValue: object){
     const coll = collection(this.firestore, 'games');
     await deleteDoc(doc(coll,id));
   }
-//************  FIREBASE  **************/
-
-
-
-// Saves the game
-saveGame(){
-  this.updateDocument(this.gameId, this.game); //this.game.toJson() nicht benötigt
-}
+//************  FIREBASE CRUD-FUNCTIONS  **************/
 
 }

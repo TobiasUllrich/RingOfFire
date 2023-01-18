@@ -4,7 +4,14 @@
         {{ card ? title : 'How to play this game' }}
     </mat-card-title>
     <mat-card-content>
-        {{ card ? description : '[1.] Share the link to invite Others  [2.] Choose Player-Names  [3.] Pick a Card on your turn' }}
+        <div *ngIf="!card">
+            <b>[1.]</b>{{ card ? description : ' Share the link to invite others' }}<br>
+            <b>[2.]</b>{{ card ? description : ' Choose player-names'}}<br>
+            <b>[3.]</b>{{ card ? description : ' Pick a card on your turn' }}
+        </div>
+        <div *ngIf="card">
+            {{ description }}<br>
+        </div>
     </mat-card-content>
 
 </mat-card>

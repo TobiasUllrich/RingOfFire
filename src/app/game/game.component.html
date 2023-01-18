@@ -23,7 +23,7 @@
 
     <!-- Wenn das Spiel vorbei ist wird GameOver angezeigt -->
     <div *ngIf="gameOver" class="gameOver">
-        <img src="assets/images/game-over.jpg" routerLink="/">
+        <img src="./assets/images/game-over.jpg" routerLink="/">
     </div>
 
     <!-- Nur wenn das Spiel nicht vorbei ist wird das Spielfeld angezeigt -->
@@ -32,25 +32,25 @@
         <div class="card-stack">
             <!--Karten-Stapel-->
             <img *ngFor="let c of [0,1,2,3]; let i = index;" [ngStyle]="{'right.px': i*5}"
-                src="assets/images/cards/card_cover.png"> <!--Alle verdeckten Karten-->
+                src="./assets/images/cards/card_cover.png"> <!--Alle verdeckten Karten-->
 
             <!--Oberste Karte des Zieh-Stapels vor Klick-->
-            <img (click)="takeCard()" class="top-card" style="right:25px" src="assets/images/cards/card_cover.png">
+            <img (click)="takeCard()" class="top-card" style="right:25px" src="./assets/images/cards/card_cover.png">
 
             <!--Oberste Karte des Gezogenen-Stapels-->
             <ng-container *ngIf="game">
-                <img *ngFor="let card of game.playedCards" class="played-card" src="assets/images/cards/{{ card }}.png">
+                <img *ngFor="let card of game.playedCards" class="played-card" src="./assets/images/cards/{{ card }}.png">
             </ng-container>
 
-            <!--Nächste Karte des Stapels vorladen-->
-            <ng-container *ngIf="game">
-                <img class="preLoadImage" src="assets/images/cards/{{ game.stack[game.stack.length-1] }}.png">
+            <!--Nächste Karte des Stapels vorladen, aber nur wenn noch mindestens 2 Karten übrig sind -->
+            <ng-container *ngIf="game && this.game.stack.length>1">
+                <img class="preLoadImage" src="./assets/images/cards/{{ game.stack[game.stack.length-1] }}.png">
             </ng-container>
 
             <!--Oberste Karte nach Klick-->
             <ng-container *ngIf="game">
                 <img *ngIf="game.pickCardAnimation" class="pick-card" style="right:55px"
-                    src="assets/images/cards/{{ game.currentCard }}.png">
+                    src="./assets/images/cards/{{ game.currentCard }}.png">
             </ng-container>
         </div>
 
